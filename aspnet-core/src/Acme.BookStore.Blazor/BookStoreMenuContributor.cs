@@ -43,6 +43,19 @@ namespace Acme.BookStore.Blazor
                     icon: "fas fa-home"
                 )
             );
+            context.Menu.AddItem(
+                new ApplicationMenuItem(
+                    "書店",
+                    l["Menu:BookStore1111"],
+                    icon: "fa fa-book"
+                ).AddItem(
+                    new ApplicationMenuItem(
+                        "書店.書",
+                        l["Menu:Books2222"],
+                        url: "/books"
+                    )
+                )
+            );
 
             return Task.CompletedTask;
         }
