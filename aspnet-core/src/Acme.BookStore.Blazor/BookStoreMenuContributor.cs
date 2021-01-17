@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Acme.BookStore.Localization;
+using Acme.BookStore.Permissions;
 using Volo.Abp.Account.Localization;
 using Volo.Abp.UI.Navigation;
 using Volo.Abp.Users;
@@ -30,7 +31,7 @@ namespace Acme.BookStore.Blazor
             }
         }
 
-        private Task ConfigureMainMenuAsync(MenuConfigurationContext context)
+        private async Task ConfigureMainMenuAsync(MenuConfigurationContext context)
         {
             var l = context.GetLocalizer<BookStoreResource>();
 
@@ -43,21 +44,38 @@ namespace Acme.BookStore.Blazor
                     icon: "fas fa-home"
                 )
             );
-            context.Menu.AddItem(
-                new ApplicationMenuItem(
-                    "書店",
-                    l["Menu:BookStore1111"],
-                    icon: "fa fa-book"
-                ).AddItem(
-                    new ApplicationMenuItem(
-                        "書店.書",
-                        l["Menu:Books2222"],
-                        url: "/books"
-                    )
-                )
-            );
 
-            return Task.CompletedTask;
+            var bookStoreMenu = new ApplicationMenuItem(
+                "BooksStore",
+                l["Menu:BookStore1111"],
+                icon: "fa fa-book"
+            );
+            context.Menu.AddItem(bookStoreMenu);
+            if (await context.IsGrantedAsync(BookStorePermissions.Books.Default))
+            {
+                bookStoreMenu.AddItem(new ApplicationMenuItem(
+                    "BooksStore.Books",
+                    l["Menu:Books"],
+                    url: "/books"
+                ));
+            }
+
+            // context.Menu.AddItem(
+            //     new ApplicationMenuItem(
+            //         "書店",
+            //         l["Menu:BookStore1111"],
+            //         icon: "fa fa-book"
+            //     ).AddItem(
+            //         new ApplicationMenuItem(
+            //             "書店.書",
+            //             l["Menu:Books2222"],
+            //             url: "/books"
+            //         )
+            //     )
+            // );
+
+
+            // return Task.CompletedTask;
         }
 
         private Task ConfigureUserMenuAsync(MenuConfigurationContext context)
